@@ -1,28 +1,28 @@
 import { Fireworks } from "fireworks-js";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
   const [isExploding, setIsExploding] = useState(false);
+  const [isGiftOpening, setIsGiftOpening] = useState(false);
+  const [isGiftOpened, setIsGiftOpened] = useState(false);
   const fireworksRef = useRef(null);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (isGiftOpened && audioRef.current) {
+      audioRef.current.play();
+    }
+  }, [isGiftOpened]);
 
   const startFireworks = () => {
     setIsExploding(true);
     const container = fireworksRef.current;
 
     const fireworks = new Fireworks(container, {
-      rocketsPoint: {
-        min: 0,
-        max: 100,
-      },
-      hue: {
-        min: 0,
-        max: 360,
-      },
-      delay: {
-        min: 15,
-        max: 30,
-      },
+      rocketsPoint: { min: 0, max: 100 },
+      hue: { min: 0, max: 360 },
+      delay: { min: 15, max: 30 },
       speed: 2,
       acceleration: 1.05,
       friction: 0.95,
@@ -31,19 +31,9 @@ function App() {
       trace: 3,
       explosion: 6,
       autoresize: true,
-      brightness: {
-        min: 50,
-        max: 80,
-      },
-      decay: {
-        min: 0.015,
-        max: 0.03,
-      },
-      mouse: {
-        click: false,
-        move: false,
-        max: 0,
-      },
+      brightness: { min: 50, max: 80 },
+      decay: { min: 0.015, max: 0.03 },
+      mouse: { click: false, move: false, max: 0 },
     });
 
     fireworks.start();
@@ -54,58 +44,95 @@ function App() {
     }, 5000);
   };
 
+  const handleOpenGift = () => {
+    if (!isGiftOpening && !isGiftOpened) {
+      setIsGiftOpening(true);
+      setTimeout(() => {
+        setIsGiftOpening(false);
+        setIsGiftOpened(true);
+      }, 2000); // delay 2s để giả lập "mở quà"
+    }
+  };
+
   return (
     <div className="App">
+      <audio ref={audioRef} src="/noname.mp3" preload="auto" />
+
       <marquee className="marquee">
-        🎉 Chúc mừng sinh nhật Bùi Thị Thu Phương! Chúc bạn tuổi mới thật rực rỡ
-        và ngập tràn niềm vui! 🎉
+        🎂 Happy Birthday Bùi Thị Thu Phương 🎂 – Chúc bạn tuổi mới thật rực rỡ,
+        hạnh phúc và toả sáng!
       </marquee>
 
-      <h1>🎊 Chúc mừng sinh nhật Bùi Thị Thu Phương! 🎊</h1>
+      <h1 className="title">
+        🎉 CHÚC MỪNG SINH NHẬT <br />
+        <span className="name">Bùi Thị Thu Phương</span> 🎉
+      </h1>
+
       <img
-        src="/z6839143492729_c8cb566c5a1ad1d658a358bf3f8895c8.jpg"
-        alt="Bùi Thị Thu Phương"
-        className="birthday-image"
+        src="/birthday-center.jpg"
+        alt="Hình sinh nhật chính"
+        className="birthday-center-image"
       />
-      <div className="message-box">
-        <h2>📋 Hồ sơ hệ thống sinh nhật</h2>
-        <ul className="message-list">
-          <li>
-            <strong>🎯 Mục tiêu:</strong>{" "}
-            <span className="highlight">Bùi Thị Thu Phương</span>
-          </li>
-          <li>
-            <strong>🎉 Cập nhật tuổi mới:</strong>{" "}
-            <span className="status success">Thành công</span>
-          </li>
-          <li>
-            <strong>💡 Trí tuệ:</strong> Đang tăng trưởng{" "}
-            <em>không giới hạn</em>
-          </li>
-          <li>
-            <strong>🔋 Năng lượng:</strong> Luôn ở mức <em>tối đa</em>
-          </li>
-          <li>
-            <strong>🩺 Sức khỏe:</strong> Được bảo trì định kỳ –{" "}
-            <span className="status ok">Không lỗi hệ thống</span>
-          </li>
-          <li>
-            <strong>❤️ Hạnh phúc:</strong> Hoạt động ổn định —{" "}
-            <span className="status ngon">Tình trạng: NGON</span>
-          </li>
-          <li className="final-message">
-            ✅ Sinh nhật triển khai thành công.
-            <br />
-            <strong>Chúc bạn một năm đầy bứt phá, thành công và rực rỡ!</strong>
-          </li>
-        </ul>
+
+      <div
+        className={`gift-box ${isGiftOpened ? "opened" : ""}`}
+        onClick={handleOpenGift}
+        style={{ cursor: isGiftOpened ? "default" : "pointer" }}
+      >
+        {!isGiftOpened && !isGiftOpening && (
+          <img
+            src="/gift-box.png"
+            alt="Click để mở quà"
+            className="gift-image"
+          />
+        )}
+
+        {isGiftOpening && (
+          <div className="gift-opening">
+            <h2>🎁 Đang mở quà...</h2>
+          </div>
+        )}
+
+        {isGiftOpened && (
+          <div className="gift-message">
+            <h2>🎁 Mở Quà Rồi Nè 🎁</h2>
+            <p>
+              🎈Chúc Phương luôn vui vẻ, đáng yêu, toả sáng và gặp nhiều may mắn
+              trong tuổi mới! 🎈
+            </p>
+            <img
+              src="/birthday-center.jpg" // Thay bằng ảnh meme bạn muốn hiển thị
+              alt="Meme vui"
+              style={{
+                width: "200px",
+                marginTop: "1rem",
+                borderRadius: "12px",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="animated-text">
+        <p>
+          💖 Một tuổi mới với nhiều ước mơ, yêu thương và thành công sẽ đến với
+          bạn! Mở quả đi bạn ơi
+        </p>
+      </div>
+
+      <div className="slider-container">
+        <div className="slider-track">
+          <img src="/anh2.jpg" alt="Kỷ niệm 1" className="slider-image" />
+          <img src="/anh3.jpg" alt="Kỷ niệm 2" className="slider-image" />
+          <img src="/anh4.jpg" alt="Kỷ niệm 3" className="slider-image" />
+        </div>
       </div>
 
       <button className="firework-button" onClick={startFireworks}>
-        🎆 Bấm để bắn pháo hoa tung toé! 🎆
+        🎆 BẤM ĐỂ BẮN PHÁO HOA 🎆
       </button>
 
-      {/* Container để render pháo hoa */}
       <div ref={fireworksRef} className="firework-canvas" />
     </div>
   );
