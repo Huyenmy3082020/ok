@@ -9,12 +9,6 @@ function App() {
   const fireworksRef = useRef(null);
   const audioRef = useRef(null);
 
-  useEffect(() => {
-    if (isGiftOpened && audioRef.current) {
-      audioRef.current.play();
-    }
-  }, [isGiftOpened]);
-
   const startFireworks = () => {
     setIsExploding(true);
     const container = fireworksRef.current;
@@ -47,10 +41,15 @@ function App() {
   const handleOpenGift = () => {
     if (!isGiftOpening && !isGiftOpened) {
       setIsGiftOpening(true);
-      setTimeout(() => {
-        setIsGiftOpening(false);
-        setIsGiftOpened(true);
-      }, 2000); // delay 2s để giả lập "mở quà"
+    }
+  };
+
+  // Khi video kết thúc, ẩn video và bật nhạc
+  const handleVideoEnded = () => {
+    setIsGiftOpening(false);
+    setIsGiftOpened(true);
+    if (audioRef.current) {
+      audioRef.current.play();
     }
   };
 
@@ -89,6 +88,17 @@ function App() {
 
         {isGiftOpening && (
           <div className="gift-opening">
+            <video
+              src="/video.mp4" // Thay đường dẫn video chúc mừng ở đây
+              autoPlay
+              controls={false}
+              onEnded={handleVideoEnded}
+              style={{
+                width: "300px",
+                borderRadius: "12px",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
+              }}
+            />
             <h2>🎁 Đang mở quà...</h2>
           </div>
         )}
@@ -100,16 +110,6 @@ function App() {
               🎈Chúc Phương luôn vui vẻ, đáng yêu, toả sáng và gặp nhiều may mắn
               trong tuổi mới! 🎈
             </p>
-            <img
-              src="/birthday-center.jpg" // Thay bằng ảnh meme bạn muốn hiển thị
-              alt="Meme vui"
-              style={{
-                width: "200px",
-                marginTop: "1rem",
-                borderRadius: "12px",
-                boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
-              }}
-            />
           </div>
         )}
       </div>
@@ -117,7 +117,7 @@ function App() {
       <div className="animated-text">
         <p>
           💖 Một tuổi mới với nhiều ước mơ, yêu thương và thành công sẽ đến với
-          bạn! Mở quả đi bạn ơi
+          bạn! Mở quà đi bạn ơi
         </p>
       </div>
 
